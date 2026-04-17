@@ -1,0 +1,19 @@
+# Build folders
+Debug/
+Release/
+bin/
+obj/
+
+# IDE settings
+.settings/
+.metadata/
+
+# Swap files (zoals die .swp die je nu ziet)
+*.swp
+
+# Output files
+*.elf
+*.bin
+*.list
+*.map
+
