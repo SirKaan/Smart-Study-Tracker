@@ -29,8 +29,6 @@ void SPI_Slave_Select_Up();
 
 int main(void)
 {
-
-	//Initialisaties
 	HAL_Init();
 
 	//SS versnellingsmeter (PE3) hoog maken om verstoringen op SPI1 te mijden
@@ -49,6 +47,16 @@ int main(void)
 	SPI_HandleTypeDef hspi = {0};
 	SPI_Config(&hspi);
 
+	//PN532
+	PN532_Handle hpn532 = {0};
+	hpn532.protocol = PN532_SPI;
+	hpn532.mode = PN532_MODE_NORMAL;
+	hpn532.interface.spi.hspi = &hspi;
+	hpn532.interface.spi.ss_pin = GPIO_PIN_2;
+	hpn532.interface.spi.ss_port = GPIOA;
+
+
+
     while(1){
     	/*
     	//SPI Test
@@ -60,7 +68,8 @@ int main(void)
     	printf("Test\n");
     	*/
 
-
+    	PN532_Init(&hpn532);
+    	HAL_Delay(500);
     }
 }
 

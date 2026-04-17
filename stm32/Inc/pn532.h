@@ -51,9 +51,8 @@ typedef struct {
 
 } PN532_Handle ;
 
-void pn532_init(PN532_Handle *handle);
+uint8_t PN532_Init(PN532_Handle *handle);
 
-static void PN532_SPI_Wakeup(PN532_Handle *handle);
 
 /*
 PSEUDOCODE

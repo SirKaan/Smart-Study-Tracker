@@ -8,7 +8,10 @@
 
 #include "pn532.h"
 
-void PN532_Init(PN532_Handle *handle){
+static void PN532_SPI_Wakeup(PN532_Handle *handle);
+static uint8_t PN532_SPI_WaitReady(PN532_Handle *handle, uint32_t timeout);
+
+uint8_t PN532_Init(PN532_Handle *handle){
 	//TODO: compatibiliteit voor software-gestuurde RSTPD_N
 
 	switch(handle->protocol) {
@@ -38,7 +41,21 @@ void PN532_Init(PN532_Handle *handle){
 
 			HAL_SPI_Transmit(handle->interface.spi.hspi, frame, sizeof(frame), 100);
 
-			HAL_GPIO_WritePin(handle->interface.spi.ss_port, handle->interface.spi.ss_pin, GPIO_PIN_SET); //SS omlaag
+			HAL_GPIO_WritePin(handle->interface.spi.ss_port, handle->interface.spi.ss_pin, GPIO_PIN_SET); //SS omhoog
+			//Anwoord ophalen en checken
+			if(!PN532_SPI_WaitReady(handle, 1000)){
+				printf("Error: SamConfiguration Timeout\n");
+				return 0;
+			}
+
+			uint8_t ack_frame[6];
+
+
+
+
+
+
+
 			break;
 		case PN532_MODE_VIRTUAL_CARD:
 
@@ -63,15 +80,42 @@ void PN532_Init(PN532_Handle *handle){
 
 static void PN532_SPI_Wakeup(PN532_Handle *handle){
 	HAL_GPIO_WritePin(handle->interface.spi.ss_port, handle->interface.spi.ss_pin, GPIO_PIN_RESET); //SS omlaag
+	HAL_Delay(2);
 	uint8_t dummy = 0x55;
 	HAL_SPI_Transmit(handle->interface.spi.hspi, &dummy, 1, 1);
 	HAL_GPIO_WritePin(handle->interface.spi.ss_port, handle->interface.spi.ss_pin, GPIO_PIN_SET); //SS omhoog
 	HAL_Delay(5);
 }
 
-//Data frame: [Preamble, Start Code, LEN, LCS, TFI, Data Command, Data Val..., DCS, Postamble]
 
+static uint8_t PN532_SPI_WaitReady(PN532_Handle *handle, uint32_t timeout){
+	uint8_t status = 0x00; //PN532 stuurt 0x01 wanneer ready
+	uint8_t action_byte = 0x02; // 0x02 -> status read
+	uint32_t time_start = HAL_GetTick();
+
+	while(HAL_GetTick() - time_start < timeout){
+
+		HAL_GPIO_WritePin(handle->interface.spi.ss_port, handle->interface.spi.ss_pin, GPIO_PIN_RESET); //SS omlaag
+
+		HAL_SPI_Transmit(handle->interface.spi.hspi, &action_byte, 1, 100); //Status read request
+
+		HAL_SPI_Receive(handle->interface.spi.hspi, &status, 1, 100); //Status ophalen
+
+		HAL_GPIO_WritePin(handle->interface.spi.ss_port, handle->interface.spi.ss_pin, GPIO_PIN_SET); //SS omhoog
+
+
+		if(status == 0x01){
+			return 1; //Ready
+		}
+	}
+	return 0; //Niet ready binnen de tijd
+}
+
+
+//Data frame: [Action Byte, Preamble, Start Code, LEN, LCS, TFI, Data Command, Data Val..., DCS, Postamble]
+
+/*
 static void PN532_SendCommand(){
 
 }
-
+*/
