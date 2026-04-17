@@ -42,14 +42,13 @@ uint8_t PN532_Init(PN532_Handle *handle){
 			HAL_SPI_Transmit(handle->interface.spi.hspi, frame, sizeof(frame), 100);
 
 			HAL_GPIO_WritePin(handle->interface.spi.ss_port, handle->interface.spi.ss_pin, GPIO_PIN_SET); //SS omhoog
-			//Anwoord ophalen en checken
+
+			//Wachter op ready
 			if(!PN532_SPI_WaitReady(handle, 1000)){
 				printf("Error: SamConfiguration Timeout\n");
 				return 0;
 			}
-
-			uint8_t ack_frame[6];
-
+			printf("Success\n");
 
 
 

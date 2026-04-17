@@ -55,7 +55,7 @@ int main(void)
 	hpn532.interface.spi.ss_pin = GPIO_PIN_2;
 	hpn532.interface.spi.ss_port = GPIOA;
 
-
+	PN532_Init(&hpn532);
 
     while(1){
     	/*
@@ -68,7 +68,7 @@ int main(void)
     	printf("Test\n");
     	*/
 
-    	PN532_Init(&hpn532);
+    	printf("test\n");
     	HAL_Delay(500);
     }
 }
