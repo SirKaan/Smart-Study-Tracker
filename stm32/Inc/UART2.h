@@ -9,6 +9,7 @@
 #define INC_UART2_H_
 
 void UART_Init(void);
-void UART_write(char c);
+void UART_SendChar(char c);
+void UART_SendString(char *s);
 
 #endif /* INC_UART2_H_ */

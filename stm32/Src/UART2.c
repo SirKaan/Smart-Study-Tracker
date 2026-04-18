@@ -20,8 +20,8 @@ void UART_Init(void){
 	GPIOA->MODER &= ~(0b1111 << 4); //clear PA2 and PA3 moder
 	GPIOA->MODER |= (0b1010 << 4); //PA2 and PA3 on alternate function mode
 	GPIOA->AFR[0] &= ~((0b1111 << 8) | (0b1111 << 12));
-	GPIOA->AFR[0] |= (7 << 8); //AF7 USART1_TX on PA9
-	GPIOA->AFR[0] |= (7 << 12); //AF7 USART1_RX on PA10
+	GPIOA->AFR[0] |= (7 << 8); //AF7 USART1_TX on PA2
+	GPIOA->AFR[0] |= (7 << 12); //AF7 USART1_RX on PA3
 	//NOTE: AFR[0]=AFRL, AFR[1] = AFRH
 
 	//usart configuration
@@ -40,3 +40,10 @@ void UART_SendChar(char c){
 	USART2->DR = c;
 }
 
+
+void UART_SendString(char *s){;
+	while(*s != '\0'){
+		UART_SendChar(*s);
+		s++;
+	}
+}

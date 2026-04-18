@@ -18,6 +18,7 @@
 
 #include <stdio.h>
 #include "pn532.h"
+#include "UART2.h"
 
 #if !defined(__SOFT_FP__) && defined(__ARM_FP)
   #warning "FPU is not initialized, but the project is compiling for an FPU. Please initialize the FPU before use."
@@ -56,10 +57,12 @@ int main(void)
 	hpn532.interface.spi.ss_port = GPIOE;
 
 	PN532_Init(&hpn532);
+	UART_Init();
 
     while(1){
     	HAL_Delay(500);
-    	printf("test\n");
+    	char testString[] = "UART Connection STM32-ESP32 successful\n";
+    	UART_SendString(testString);
     }
 }
 
