@@ -52,24 +52,14 @@ int main(void)
 	hpn532.protocol = PN532_SPI;
 	hpn532.mode = PN532_MODE_NORMAL;
 	hpn532.interface.spi.hspi = &hspi;
-	hpn532.interface.spi.ss_pin = GPIO_PIN_2;
-	hpn532.interface.spi.ss_port = GPIOA;
+	hpn532.interface.spi.ss_pin = GPIO_PIN_15;
+	hpn532.interface.spi.ss_port = GPIOE;
 
 	PN532_Init(&hpn532);
 
     while(1){
-    	/*
-    	//SPI Test
-    	uint8_t test_bytes[] = {0b01010101, 0b00001111};
     	HAL_Delay(500);
-    	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_2, GPIO_PIN_RESET);
-    	HAL_SPI_Transmit(&hspi, test_bytes, 2, 100);
-    	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_2, GPIO_PIN_SET);
-    	printf("Test\n");
-    	*/
-
     	printf("test\n");
-    	HAL_Delay(500);
     }
 }
 
@@ -91,14 +81,14 @@ void SPI_Config(SPI_HandleTypeDef *hspi){
 	GPIO_Init.Pin = GPIO_PIN_7;
 	HAL_GPIO_Init(GPIOA, &GPIO_Init);
 
-	//Slave Select Pin PA2 voor PN532
-	GPIO_Init.Pin = GPIO_PIN_2;
+	//Slave Select Pin PE15 voor PN532
+	GPIO_Init.Pin = GPIO_PIN_15;
 	GPIO_Init.Mode = GPIO_MODE_OUTPUT_PP;
 	GPIO_Init.Alternate = 0;
 	GPIO_Init.Speed = GPIO_SPEED_FREQ_LOW;
-	HAL_GPIO_Init(GPIOA, &GPIO_Init);
+	HAL_GPIO_Init(GPIOE, &GPIO_Init);
 
-	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_2, GPIO_PIN_SET); //slave select default high
+	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_15, GPIO_PIN_SET); //slave select default high
 
 	hspi->Instance = SPI1;
 	hspi->Init.Mode = SPI_MODE_MASTER;
