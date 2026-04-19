@@ -61,7 +61,7 @@ int main(void)
 
     while(1){
     	HAL_Delay(500);
-    	char testString[] = "UART Connection STM32-ESP32 successful\n";
+    	char testString[] = "";
     	UART_SendString(testString);
     }
 }
