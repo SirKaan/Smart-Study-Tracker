@@ -1,9 +1,9 @@
 from flask import Flask, request, jsonify
-import csv;
-from datetime import datetime;
-import os;
+import csv
+from datetime import datetime
+import os
 
-app = Flask(__name__)
+app = Flask(__name__) #Server aanmaken
 
 #ID's die toegang hebben
 USERS = {
@@ -47,7 +47,28 @@ def clock_in_or_out(id):
         return "In"
 
 
-id = "45A2C133"
-action = clock_in_or_out(id)
-log_to_csv(id, USERS[id], action)
+
+#Flask server configuratie
+@app.route("/scan", methods=['POST'])
+def handle():
+    data = request.get_json()
+    id = data['id']
+
+    #Als het ID klopt matchen met de juiste naam en loggen
+    if id in USERS:
+        name = USERS[id]
+        action = clock_in_or_out(id)
+        log_to_csv(id, name, action)
+        print("User", name, "identified.")
+        return jsonify({"status": "authorized", "action": action}), 200 #status 200 OK
+    else:
+        print("Invalid ID")
+        return jsonify({"status": "denied"}), 403 #status 403 Forbidden
+
+
+
+if __name__ == "__main__":
+    app.run(host='0.0.0.0', port=5000)
+
+
 
