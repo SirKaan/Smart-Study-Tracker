@@ -48,13 +48,33 @@ void loop() {
     String data = Serial1.readStringUntil('\n');
     Serial.print("Received data: ");
     Serial.println(data);
+
+    sendToServer(data.substring(3)); //"ID:" wegfilteren 
   }
     
 }
 
 //Data versturen naar Server
 void sendToServer(String data){
-  
+  HTTPClient http;
+  String serverURL = "http://172.20.10.3:5000/scan"; //Vaste ip en poort op flas server
+
+  http.begin(serverURL);
+
+  http.addHeader("Content-Type", "application/json");
+
+  String json = "{\"id\":\"" + data + "\"}";
+
+  int status_code = http.POST(json);
+  if(status_code > 0){
+    String response = http.getString();
+    Serial.print("Server responds: ");
+    Serial.println(response + " " + String(status_code));
+  } else {
+    Serial.println("Error: " + String(status_code));
+  }
+
+  http.end();
 }
 
 //Terug met Wifi proberen te verbinden indien verbinding verbroken
