@@ -25,8 +25,7 @@
 #endif
 
 void SPI_Config(SPI_HandleTypeDef *hspi);
-void SPI_Slave_Select_Down();
-void SPI_Slave_Select_Up();
+
 
 int main(void)
 {
@@ -43,6 +42,8 @@ int main(void)
 	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_3, GPIO_PIN_SET);
 
 
+
+
 	//SPI1 configuratie
 	__HAL_RCC_GPIOA_CLK_ENABLE(); //RCC klok op poort A activeren
 	SPI_HandleTypeDef hspi = {0};
@@ -56,13 +57,34 @@ int main(void)
 	hpn532.interface.spi.ss_pin = GPIO_PIN_15;
 	hpn532.interface.spi.ss_port = GPIOE;
 
+	//Blauwe User button configureren
+	GPIO_InitTypeDef GPIO_Init_PA0 = {0};
+	GPIO_Init_PA0.Mode = GPIO_MODE_INPUT;
+	GPIO_Init_PA0.Pin = GPIO_PIN_0;
+	GPIO_Init_PA0.Pull = GPIO_PULLDOWN; //pulldown weerstand
+	GPIO_Init_PA0.Speed = GPIO_SPEED_FREQ_LOW;
+
+	HAL_GPIO_Init(GPIOA, &GPIO_Init_PA0);
+
 	PN532_Init(&hpn532);
 	UART_Init();
 
-    while(1){
-    	HAL_Delay(500);
-    	char testString[] = "";
-    	UART_SendString(testString);
+	//Variables
+	uint8_t pushed = 0;
+
+	while(1){
+    	if(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0) == GPIO_PIN_SET){
+    		HAL_Delay(20);
+
+    		if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0) == GPIO_PIN_SET)
+			{
+				char testID[] = "ID:45A2C133\n";
+				UART_SendString(testID);
+
+
+				while (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0) == GPIO_PIN_SET); //Checken op loslaten
+			}
+		}
     }
 }
 
